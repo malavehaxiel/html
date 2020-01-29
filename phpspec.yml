@@ -1,0 +1,5 @@
+suites:
+    main:
+        namespace: MalaveHaxiel\Html
+        psr4_prefix: MalaveHaxiel\Html
+        src_path: src

@@ -1,0 +1,45 @@
+{
+    "name": "malavehaxiel/html-grid",
+    "description": "Add the grid functionality in the inputs content entries of the styde-html library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Haxiel Malave",
+            "email": "malavehaxiel96@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "laravelcollective/html": "^6.0",
+        "illuminate/translation": "^6.0"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "~4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MalaveHaxiel\\Html\\": "src/"
+        },
+        "files": [
+          "src/helpers.php"
+        ]
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MalaveHaxiel\\Html\\HtmlServiceProvider"
+            ],
+            "aliases": {
+                "Field": "MalaveHaxiel\\Html\\Facades\\Field",
+                "Alert": "MalaveHaxiel\\Html\\Facades\\Alert",
+                "Menu": "MalaveHaxiel\\Html\\Facades\\Menu",
+                "Form": "Collective\\Html\\FormFacade",
+                "Html": "Collective\\Html\\HtmlFacade"
+            },
+            "dont-discover": [
+                "laravelcollective/html"
+            ]
+        }
+    }
+}
