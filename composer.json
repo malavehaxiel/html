@@ -31,7 +31,7 @@
                 "MalaveHaxiel\\Html\\HtmlServiceProvider"
             ],
             "aliases": {
-                "Field": "MalaveHaxiel\\Html\\Facades\\Field",
+                "Styde": "MalaveHaxiel\\Html\\Facades\\Field",
                 "Alert": "MalaveHaxiel\\Html\\Facades\\Alert",
                 "Menu": "MalaveHaxiel\\Html\\Facades\\Menu",
                 "Form": "Collective\\Html\\FormFacade",
