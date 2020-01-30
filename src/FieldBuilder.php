@@ -293,6 +293,8 @@ class FieldBuilder
      */
     public function select($name, $options = array(), $selected = null, array $attributes = array(), array $extra = array())
     {
+        if ($options instanceof \Illuminate\Support\Collection)
+            $options = $options->toArray();
         /**
          * Swap values so programmers can skip the $value argument
          * and pass the $attributes array directly.
@@ -567,7 +569,7 @@ class FieldBuilder
         }
 
         $attribute = 'validation.attributes.'.$name;
-        
+
         $label = $this->lang->get($attribute);
 
         if ($label == $attribute) {
@@ -745,11 +747,22 @@ class FieldBuilder
 
         $attributes = $this->getHtmlAttributes($type, $attributes, $errors, $id);
 
+        $multiple = false;
+
+        foreach ($attributes as $val)
+        {
+            if ($val == 'multiple')
+            {
+                $multiple = true;
+            }
+        }
+
         $input = $this->buildControl($type, $name, $value, $attributes, $options, $htmlName, $hasErrors);
 
         return $this->theme->render(
             $customTemplate,
-            array_merge($extra, compact('htmlName', 'id',  'label', 'input', 'errors', 'hasErrors', 'required')),
+            array_merge($extra, compact('htmlName', 'id',  'label', 'input', 'errors', 'hasErrors', 'required',
+            'extra', 'value', 'attributes', 'name', 'multiple', 'type')),
             'fields.'.$this->getDefaultTemplate($type)
         );
     }
@@ -771,9 +784,18 @@ class FieldBuilder
     {
         switch ($type) {
             case 'password':
+                $attributes['class'] = 'form-control ' . $attributes['class'] ?? null;
+                $attributes['style'] = 'width: 100%; ' . @$attributes['style'] ?? null;
+                return $this->form->$type($htmlName, $attributes);
             case 'file':
                 return $this->form->$type($htmlName, $attributes);
             case 'select':
+                $attributes['data-live-search'] = @$attributes['search'] ?? "true";
+                $attributes['data-size'] = '8';
+                $attributes['data-none-selected-text'] = 'Sin seleccionar';
+                $attributes['class'] = 'form-control selectpicker ' . $attributes['class'] ?? null;
+                $attributes['style'] = 'width: 100%; ' . @$attributes['style'] ?? null;
+
                 return $this->form->$type(
                     $htmlName,
                     $this->addEmptyOption(
@@ -800,9 +822,58 @@ class FieldBuilder
                     $value,
                     $attributes
                 );
+            case 'email':
+            case 'url':
+            case 'textarea':
+            case 'number':
+            case 'text':
+                $attributes['class'] = 'form-control ' . $attributes['class'] ?? null;
+                $attributes['style'] = 'width: 100%; ' . @$attributes['style'] ?? null;
+
+                return $this->form->$type($htmlName, $value, $attributes);
             default:
                 return $this->form->$type($htmlName, $value, $attributes);
         }
     }
+    
+    public function open(array $options = array())
+    {
+        $options['role'] = 'form';
+        $options['autocomplete'] = 'off';
+        if (! isset($options['id'])) $options['id'] = 'form-main';
 
+        return app()->make('form')->open($options);
+    }
+
+    public function close()
+    {
+        return app()->make('form')->close();
+    }
+
+    public function coin($name, $value = null, array $attributes = array(), array $extra = array())
+    {
+        $precision = $attributes['precision'] ?? 2;
+
+        $extra['coin'] = true;
+        $extra['precision'] = $precision;
+        $attributes['style'] = 'text-align: right;' . @$attributes['style'];
+
+        return $this->text($name, doubleTomoney($value, $precision), $attributes, $extra);
+    }
+
+    public function number($name, $value = null, $options = [])
+    {
+        $options['style'] = 'text-align: right;';
+        return $this->input('number', $name, $value, $options);
+    }
+
+    public function date($name, $value = null, array $attributes = array(), array $extra = array())
+    {
+        $attributes['class'] = 'datepicker';
+        $attributes['readonly'] = 'readonly';
+        $attributes['placeholder'] = 'dd/mm/aaaa';
+        $extra['date'] = 'date';
+
+        return $this->text($name, $value, $attributes, $extra);
+    }
 }
